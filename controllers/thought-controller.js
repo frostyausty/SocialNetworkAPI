@@ -14,11 +14,6 @@ const thoughtController = {
     //get thought by id
     getThoughtById({ params }, res) {
         Thought.findOne({ _id: params.id })
-        // .populate({     ---------need for reactions
-        //     path: 'userId',
-        //     select: '-__v'
-        // })
-        // .select('-__v')
         .then(dbThoughtData => {
             if(!dbThoughtData) {
                 res.status(404).json({ message: 'No thought found with this id!' });
@@ -76,6 +71,34 @@ const thoughtController = {
                 res.json(dbThoughtData);
             })
             .catch(err=> res.status(400).json(err));
+    },
+
+    //add reaction
+    addReaction({ params, body }, res) {
+        Thought.findOneAndUpdate(
+            { _id: params.thoughtId },
+            { $push: { reactions: body } },
+            { new: true }
+        )
+            .then(dbReactionData => {
+                if (!dbReactionData) {
+                    res.status(404).json({ message: 'No thought found with this id!' });
+                    return;
+                }
+                res.json(dbReactionData);
+            })
+            .catch(err => res.json(err));
+    },
+
+    //delete reaction
+    deleteReaction({ params }, res) {
+        Thought.findOneAndUpdate(
+            { _id: params.thoughtId },
+            { $pull: { reactions: { reactionId: params.reactionId } } },
+            { new: true }
+        )
+            .then(dbReactionData => res.json(dbReactionData))
+            .catch(err => res.json(err));
     }
 };
 
