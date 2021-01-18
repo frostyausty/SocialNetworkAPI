@@ -1,8 +1,5 @@
 const { User } = require('../models');
 
-//do we need this 
-const { db } = require('../models/User');
-
 const UserController = {
     //get all users
     getAllUsers(req, res) {
